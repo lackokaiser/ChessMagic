@@ -145,4 +145,15 @@ public class ChessBoard
 
         return takenPiece;
     }
+
+    public Piece? RemovePiece(Position from)
+    {
+        Square? square = ConvertToSquare(from);
+        if (square == null)
+            throw new ApplicationException("Invalid square position");
+
+        Piece? piece = square.Occupant;
+        square.Occupant = null;
+        return piece;
+    }
 }
