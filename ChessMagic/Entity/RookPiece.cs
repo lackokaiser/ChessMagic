@@ -67,8 +67,8 @@ public class RookPiece : Piece
             return false;
         if (positionTo.X - attackGoThrough.X != 0 && positionTo.Y - attackGoThrough.Y != 0)
             return false;
-        xOffset = xOffset == 0 ? 0 : 1;
-        yOffset = yOffset == 0 ? 0 : 1;
+        xOffset = xOffset == 0 ? 0 : xOffset / Math.Abs(xOffset);
+        yOffset = yOffset == 0 ? 0 : yOffset / Math.Abs(yOffset);
 
         if (xOffset == 0 && yOffset == 0) // The position to go is the position the piece is standing on
             return attackGoThrough.Equals(positionFrom);
@@ -76,14 +76,17 @@ public class RookPiece : Piece
         Position checkedPosition = positionFrom.Offset(xOffset, yOffset);
         Square? checkedSquare = board.ConvertToSquare(checkedPosition);
 
+        bool goneThroughPosition = positionFrom.Equals(attackGoThrough);
         while (checkedSquare != null && !checkedPosition.Equals(positionTo) && depth >= 0)
         {
+            if (checkedPosition.Equals(attackGoThrough))
+                goneThroughPosition = true;
             checkedPosition = checkedPosition.Offset(xOffset, yOffset);
             if (checkedSquare.IsOccupied())
                 depth--;
             checkedSquare = board.ConvertToSquare(checkedPosition);
         }
 
-        return checkedPosition.Equals(positionTo) && depth >= 0;
+        return goneThroughPosition && checkedPosition.Equals(positionTo) && depth >= 0;
     }
 }
