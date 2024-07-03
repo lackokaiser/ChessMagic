@@ -10,7 +10,7 @@ public class BishopPiece : Piece
     }
     
     public override PieceType Type => PieceType.Bishop;
-    public override Position[] GetPossibleMoves(Position positionFrom, ChessBoard board, PieceColor color)
+    public override Position[] GetPossibleMoves(Position positionFrom, ChessBoard board)
     {
         Position upPosition = positionFrom.Offset(1, 1);
         Position downPosition = positionFrom.Offset(1, -1);
@@ -22,7 +22,7 @@ public class BishopPiece : Piece
         Square? leftSquare = board.ConvertToSquare(leftPosition);
         
         List<Position> moves = new();
-        while (upSquare != null && (!upSquare.IsOccupied() || upSquare.Occupant?.Color != color))
+        while (upSquare != null && (!upSquare.IsOccupied() || upSquare.Occupant?.Color != Color))
         {
             moves.Add(upPosition);
             upPosition = upPosition.Offset(1, 1);
@@ -30,7 +30,7 @@ public class BishopPiece : Piece
                 break;
             upSquare = board.ConvertToSquare(upPosition);
         }
-        while (downSquare != null && (!downSquare.IsOccupied() || downSquare.Occupant?.Color != color))
+        while (downSquare != null && (!downSquare.IsOccupied() || downSquare.Occupant?.Color != Color))
         {
             moves.Add(downPosition);
             downPosition = downPosition.Offset(1, -1);
@@ -38,7 +38,7 @@ public class BishopPiece : Piece
                 break;
             downSquare = board.ConvertToSquare(downPosition);
         }
-        while (rightSquare != null && (!rightSquare.IsOccupied() || rightSquare.Occupant?.Color != color))
+        while (rightSquare != null && (!rightSquare.IsOccupied() || rightSquare.Occupant?.Color != Color))
         {
             moves.Add(rightPosition);
             rightPosition = rightPosition.Offset(-1, -1);
@@ -46,7 +46,7 @@ public class BishopPiece : Piece
                 break;
             rightSquare = board.ConvertToSquare(rightPosition);
         }
-        while (leftSquare != null && (!leftSquare.IsOccupied() || leftSquare.Occupant?.Color != color))
+        while (leftSquare != null && (!leftSquare.IsOccupied() || leftSquare.Occupant?.Color != Color))
         {
             moves.Add(leftPosition);
             leftPosition = leftPosition.Offset(-1, 1);

@@ -10,7 +10,7 @@ public class KingPiece : Piece
     }
 
     public override PieceType Type => PieceType.King;
-    public override Position[] GetPossibleMoves(Position positionFrom, ChessBoard board, PieceColor color)
+    public override Position[] GetPossibleMoves(Position positionFrom, ChessBoard board)
     {
         List<Position> moves = new();
 
@@ -65,10 +65,9 @@ public class KingPiece : Piece
         return k;
     }
 
-    public override SpecialMove[] GetPossibleSpecialMoves(Position positionFrom, ChessBoard board, bool firstMove,
-        bool previouslyThreatened, PieceColor color)
+    public override SpecialMove[] GetPossibleSpecialMoves(Position positionFrom, ChessBoard board)
     {
-        if (!firstMove)
+        if (!FirstMove)
             return [];
 
         List<SpecialMove> moves = new();

@@ -10,17 +10,17 @@ public class KnightPiece : Piece
     }
     
     public override PieceType Type => PieceType.Knight;
-    public override Position[] GetPossibleMoves(Position positionFrom, ChessBoard board, PieceColor color)
+    public override Position[] GetPossibleMoves(Position positionFrom, ChessBoard board)
     {
         List<Position> moves = new();
-        CheckPosition(1, 2, ref moves, positionFrom, board, color);
-        CheckPosition(-1, 2, ref moves, positionFrom, board, color);
-        CheckPosition(2, 1, ref moves, positionFrom, board, color);
-        CheckPosition(2, -1, ref moves, positionFrom, board, color);
-        CheckPosition(1, -2, ref moves, positionFrom, board, color);
-        CheckPosition(-1, -2, ref moves, positionFrom, board, color);
-        CheckPosition(-2, 1, ref moves, positionFrom, board, color);
-        CheckPosition(-2, -1, ref moves, positionFrom, board, color);
+        CheckPosition(1, 2, ref moves, positionFrom, board, Color);
+        CheckPosition(-1, 2, ref moves, positionFrom, board, Color);
+        CheckPosition(2, 1, ref moves, positionFrom, board, Color);
+        CheckPosition(2, -1, ref moves, positionFrom, board, Color);
+        CheckPosition(1, -2, ref moves, positionFrom, board, Color);
+        CheckPosition(-1, -2, ref moves, positionFrom, board, Color);
+        CheckPosition(-2, 1, ref moves, positionFrom, board, Color);
+        CheckPosition(-2, -1, ref moves, positionFrom, board, Color);
 
         return moves.ToArray();
     }

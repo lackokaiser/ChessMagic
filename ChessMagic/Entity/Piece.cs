@@ -9,11 +9,9 @@ namespace ChessMagic.Entity;
 public abstract class Piece
 {
     private PieceColor _color;
-    private bool _previouslyThreatened;
 
     private Position[] _possibleMoves = [];
     private SpecialMove[] _possibleSpecialMoves = [];
-
     public bool FirstMove { get; private set; } = true;
     public PieceColor Color => _color;
 
@@ -31,32 +29,31 @@ public abstract class Piece
     /// <summary>
     /// Generates and stores possible moves in the <see cref="_possibleMoves"/> variable
     /// </summary>
+    /// <param name="position">The position of the piece</param>
     /// <param name="board">The board where the piece is</param>
-    /// <param name="pos">The position of the piece</param>
-    public void GeneratePossibleMoves(ChessBoard board, Position pos)
+    public void GeneratePossibleMoves(Position position, ChessBoard board)
     {
-        _possibleMoves = GetPossibleMoves(pos, board, _color);
+        _possibleMoves = GetPossibleMoves(position, board);
     }
 
     /// <summary>
     /// Generates and stores possible special moves in the <see cref="_possibleSpecialMoves"/> variable
     /// </summary>
+    /// <param name="position">The position of the piece</param>
     /// <param name="board">The board where the piece is</param>
-    /// <param name="pos">The position of the piece</param>
-    public void GeneratePossibleSpecialMoves(ChessBoard board, Position pos)
+    public void GeneratePossibleSpecialMoves(Position position, ChessBoard board)
     {
-        _possibleSpecialMoves = GetPossibleSpecialMoves(pos, board, FirstMove, _previouslyThreatened, _color);
+        _possibleSpecialMoves = GetPossibleSpecialMoves(position, board);
         
     }
-    
+
     /// <summary>
     /// Generates all possible moves on the board from the given position
     /// </summary>
     /// <param name="positionFrom">The position where the piece should be</param>
     /// <param name="board">The board the piece is on</param>
-    /// <param name="color">The color of the piece</param>
     /// <returns>A list of each position to move to</returns>
-    public abstract Position[] GetPossibleMoves(Position positionFrom, ChessBoard board, PieceColor color);
+    public abstract Position[] GetPossibleMoves(Position positionFrom, ChessBoard board);
 
     /// <summary>
     /// Generates all possible special moves on the board from the given position<br/>
@@ -64,12 +61,8 @@ public abstract class Piece
     /// </summary>
     /// <param name="positionFrom">The position where the piece should be</param>
     /// <param name="board">The board the piece is on</param>
-    /// <param name="firstMove">Indicates if this is the first move of the piece</param>
-    /// <param name="previouslyThreatened">Indicates if the piece has been threatened</param>
-    /// <param name="color">The color of the piece</param>
     /// <returns>A list of each possible special move</returns>
-    public virtual SpecialMove[] GetPossibleSpecialMoves(Position positionFrom, ChessBoard board, bool firstMove,
-        bool previouslyThreatened, PieceColor color)
+    public virtual SpecialMove[] GetPossibleSpecialMoves(Position positionFrom, ChessBoard board)
     {
         return [];
     }

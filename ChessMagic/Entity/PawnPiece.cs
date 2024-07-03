@@ -11,9 +11,9 @@ public class PawnPiece : Piece
     {
     }
 
-    public override Position[] GetPossibleMoves(Position positionFrom, ChessBoard board, PieceColor color)
+    public override Position[] GetPossibleMoves(Position positionFrom, ChessBoard board)
     {
-        int moveDirection = color == PieceColor.Black ? -1 : 1;
+        int moveDirection = Color == PieceColor.Black ? -1 : 1;
 
         Position forward = positionFrom.Offset(0, moveDirection);
         Square? sqr = board.ConvertToSquare(forward);
@@ -29,7 +29,7 @@ public class PawnPiece : Piece
         sqr = board.ConvertToSquare(forward);
         if (sqr != null)
         {
-            if (sqr.IsOccupied() && sqr.Occupant?.Color != color) 
+            if (sqr.IsOccupied() && sqr.Occupant?.Color != Color) 
             {
                 moves.Add(forward);
                 board.ThreatenSquare(sqr, positionFrom);
@@ -40,7 +40,7 @@ public class PawnPiece : Piece
         sqr = board.ConvertToSquare(forward);
         if (sqr != null)
         {
-            if (sqr.IsOccupied() && sqr.Occupant?.Color != color)
+            if (sqr.IsOccupied() && sqr.Occupant?.Color != Color)
             {
                 moves.Add(forward);
                 board.ThreatenSquare(sqr, positionFrom);
@@ -51,17 +51,16 @@ public class PawnPiece : Piece
         return moves.ToArray();
     }
 
-    public override SpecialMove[] GetPossibleSpecialMoves(Position positionFrom, ChessBoard board, bool firstMove,
-        bool previouslyThreatened, PieceColor color)
+    public override SpecialMove[] GetPossibleSpecialMoves(Position positionFrom, ChessBoard board)
     {
         List<SpecialMove> moves = [];
-        int moveDirection = color == PieceColor.Black ? -1 : 1;
+        int moveDirection = Color == PieceColor.Black ? -1 : 1;
         
         // double move
         Position forward = positionFrom.Offset(0, moveDirection * 2);
         Square? squareForward = board.ConvertToSquare(forward.Offset(0, -moveDirection));
         Square? squareForwardTwice = board.ConvertToSquare(forward);
-        if(squareForward != null && squareForwardTwice != null && firstMove && !squareForward.IsOccupied() && !squareForwardTwice.IsOccupied())
+        if(squareForward != null && squareForwardTwice != null && FirstMove && !squareForward.IsOccupied() && !squareForwardTwice.IsOccupied())
             moves.Add(new SpecialMove(new Position(-1, -1), forward));
         
         // anti-double move
@@ -73,7 +72,7 @@ public class PawnPiece : Piece
 
         if (leftSquare != null && leftSquare.IsOccupied())
         {
-            if (leftSquare.Occupant.Color != color && leftSquare.Occupant is PawnPiece leftPawn)
+            if (leftSquare.Occupant.Color != Color && leftSquare.Occupant is PawnPiece leftPawn)
             {
                 if(leftPawn.performedDoubleMove)
                     moves.Add(new SpecialMove(left, left.Offset(0, moveDirection)));
@@ -81,7 +80,7 @@ public class PawnPiece : Piece
         }
         if (rightSquare != null && rightSquare.IsOccupied())
         {
-            if (rightSquare.Occupant.Color != color && rightSquare.Occupant is PawnPiece rightPawn)
+            if (rightSquare.Occupant.Color != Color && rightSquare.Occupant is PawnPiece rightPawn)
             {
                 if(rightPawn.performedDoubleMove)
                     moves.Add(new SpecialMove(right, right.Offset(0, moveDirection)));
