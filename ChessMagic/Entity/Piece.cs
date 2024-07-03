@@ -9,12 +9,12 @@ namespace ChessMagic.Entity;
 public abstract class Piece
 {
     private PieceColor _color;
-    private bool _firstMove = true;
     private bool _previouslyThreatened;
 
     private Position[] _possibleMoves = [];
     private SpecialMove[] _possibleSpecialMoves = [];
 
+    public bool FirstMove { get; private set; } = true;
     public PieceColor Color => _color;
 
     public virtual PieceType Type => PieceType.Pawn;
@@ -45,7 +45,7 @@ public abstract class Piece
     /// <param name="pos">The position of the piece</param>
     public void GeneratePossibleSpecialMoves(ChessBoard board, Position pos)
     {
-        _possibleSpecialMoves = GetPossibleSpecialMoves(pos, board, _firstMove, _previouslyThreatened, _color);
+        _possibleSpecialMoves = GetPossibleSpecialMoves(pos, board, FirstMove, _previouslyThreatened, _color);
         
     }
     
