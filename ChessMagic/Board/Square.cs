@@ -50,11 +50,12 @@ public class Square
     /// <summary>
     /// Calls the occupier, if any, to generate all possible moves for itself
     /// </summary>
-    /// <param name="pos">The position of the square</param>
-    public void GeneratePossibleMoves(ChessBoard board, Position pos)
+    /// <param name="position">The position of the square</param>
+    /// <param name="board">The chessboard where the square is</param>
+    public void GeneratePossibleMoves(Position position, ChessBoard board)
     {
-        _occupant?.GeneratePossibleMoves(board, pos);
-        _occupant?.GeneratePossibleSpecialMoves(board, pos);
+        _occupant?.GeneratePossibleMoves(position, board);
+        _occupant?.GeneratePossibleSpecialMoves(position, board);
     }
 
     /// <summary>
