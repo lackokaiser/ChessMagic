@@ -16,7 +16,7 @@ public class Square
         set => _occupant = value;
     }
 
-    public List<Position> ThreateningSquares { get; set; } = new ();
+    public List<Position> ThreateningPositions { get; set; } = new ();
 
     public Position[] PossibleMoves
     {
@@ -56,6 +56,18 @@ public class Square
     {
         _occupant?.GeneratePossibleMoves(position, board);
         _occupant?.GeneratePossibleSpecialMoves(position, board);
+    }
+
+    public void FilterPossibleMoves(Position position, ChessBoard board, Position kingPosition, List<Position> kingThreatenedFrom)
+    {
+        if (_occupant == null)
+            return;
+        int movesCount =
+            _occupant.RemoveInvalidMoves(position, board, ThreateningPositions, kingPosition, kingThreatenedFrom);
+        int specialMoveCount = _occupant.RemoveInvalidSpecialMoves(position, board, ThreateningPositions,
+            kingPosition, kingThreatenedFrom);
+
+        _occupant.TrimMoves(movesCount, specialMoveCount);
     }
 
     /// <summary>
