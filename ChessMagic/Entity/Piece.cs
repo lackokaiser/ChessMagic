@@ -10,8 +10,8 @@ public abstract class Piece
 {
     private PieceColor _color;
 
-    private Position[] _possibleMoves = [];
-    private SpecialMove[] _possibleSpecialMoves = [];
+    protected Position[] _possibleMoves = [];
+    protected SpecialMove[] _possibleSpecialMoves = [];
     public bool FirstMove { get; private set; } = true;
     public PieceColor Color => _color;
 
@@ -67,20 +67,46 @@ public abstract class Piece
         return [];
     }
 
+    public void TrimMoves(int moveCount, int specialMoveCount)
+    {
+        if (moveCount != PossibleMoves.Length)
+        {
+            Position[] newMoves = new Position[moveCount];
+
+            for (int i = 0; i < moveCount; i++)
+            {
+                newMoves[i] = PossibleMoves[i];
+            }
+
+            _possibleMoves = newMoves;
+        }
+        
+        if (specialMoveCount != PossibleSpecialMoves.Length)
+        {
+            SpecialMove[] newMoves = new SpecialMove[specialMoveCount];
+
+            for (int i = 0; i < specialMoveCount; i++)
+            {
+                newMoves[i] = PossibleSpecialMoves[i];
+            }
+
+            _possibleSpecialMoves = newMoves;
+        }
+    }
+
     /// <summary>
     /// Removes every invalid move from the moves list in-place
     /// </summary>
     /// <param name="positionFrom">The position where the piece is</param>
-    /// <param name="moves">The move list</param>
     /// <param name="board">The chessboard where the piece is</param>
     /// <param name="threateningPositions">All positions that threaten the piece in question</param>
     /// <param name="kingPosition">The piece's king, if the king is caller, it will receive itself in this</param>
     /// <param name="kingThreatenedFrom">The king's threatening squares</param>
     /// <returns>the new length of the array where the moves are valid</returns>
-    public virtual int RemoveInvalidMoves(Position positionFrom, ref Position[] moves, ChessBoard board,
-        List<Position> threateningPositions, Position kingPosition, List<Position>? kingThreatenedFrom = null)
+    public virtual int RemoveInvalidMoves(Position positionFrom, ChessBoard board, List<Position> threateningPositions, 
+        Position kingPosition, List<Position>? kingThreatenedFrom = null)
     {
-        int k = moves.Length;
+        int k = _possibleMoves.Length;
         // handle king checks
         if (kingThreatenedFrom != null)
         {
@@ -92,12 +118,12 @@ public abstract class Piece
             
                 for(int i = 0; i < k; i++)
                 {
-                    Position move = moves[i];
+                    Position move = _possibleMoves[i];
                     if (!move.Equals(position) && !kingThreatenedSquare.Occupant.CanAttack(position, kingPosition, board, move, 0))
                     {
                         // king attack cannot be stopped through this move, remove it from valid moves
-                        moves[i] = moves[k - 1];
-                        moves[k - 1] = move;
+                        _possibleMoves[i] = _possibleMoves[k - 1];
+                        _possibleMoves[k - 1] = move;
                         k--;
                         i--;
                     }
@@ -118,11 +144,11 @@ public abstract class Piece
                 // piece is pinned
                 for(int i = 0; i < k; i++)
                 {
-                    Position move = moves[i];
+                    Position move = _possibleMoves[i];
                     if (!threateningSquare.Occupant.CanAttack(threateningPosition, kingPosition, board, move, 1))
                     {
-                        moves[i] = moves[k - 1];
-                        moves[k - 1] = move;
+                        _possibleMoves[i] = _possibleMoves[k - 1];
+                        _possibleMoves[k - 1] = move;
                         k--;
                         i--;
                     }
@@ -137,16 +163,15 @@ public abstract class Piece
     /// Removes every invalid special move from the moves list in-place
     /// </summary>
     /// <param name="positionFrom">The position where the piece is</param>
-    /// <param name="moves">The special move list</param>
     /// <param name="board">The chessboard where the piece is</param>
     /// <param name="threateningPositions">All positions that threaten the piece in question</param>
     /// <param name="kingPosition">The piece's king, if the king is caller, it will receive itself in this</param>
     /// <param name="kingThreatenedFrom">The king's threatening squares</param>
     /// <returns>the new length of the array where the special moves are valid</returns>
-    public virtual int RemoveInvalidSpecialMoves(Position positionFrom, ref SpecialMove[] moves, ChessBoard board,
+    public virtual int RemoveInvalidSpecialMoves(Position positionFrom, ChessBoard board,
         List<Position> threateningPositions, Position kingPosition, List<Position>? kingThreatenedFrom = null)
     {
-        return moves.Length;
+        return _possibleSpecialMoves.Length;
     }
 
 

@@ -43,21 +43,21 @@ public class KingPiece : Piece
         return false;
     }
 
-    public override int RemoveInvalidMoves(Position positionFrom, ref Position[] moves, ChessBoard board, List<Position> threateningPositions,
+    public override int RemoveInvalidMoves(Position positionFrom, ChessBoard board, List<Position> threateningPositions,
         Position kingPosition, List<Position>? kingThreatenedFrom = null)
     {
-        int k = moves.Length;
+        int k = _possibleMoves.Length;
         for (int i = 0; i < k; i++)
         {
-            Square? square = board.ConvertToSquare(moves[i]);
+            Square? square = board.ConvertToSquare(_possibleMoves[i]);
 
             if (square == null)
                 throw new ApplicationException("Invalid move");
 
-            if (square.ThreateningSquares.Count > 0)
+            if (square.ThreateningPositions.Count > 0)
             {
                 k--;
-                moves[i] = moves[k];
+                _possibleMoves[i] = _possibleMoves[k];
                 i--;
             }
         }
@@ -112,15 +112,15 @@ public class KingPiece : Piece
         return moves.ToArray();
     }
 
-    public override int RemoveInvalidSpecialMoves(Position positionFrom, ref SpecialMove[] moves, ChessBoard board,
+    public override int RemoveInvalidSpecialMoves(Position positionFrom, ChessBoard board,
         List<Position> threateningPositions, Position kingPosition, List<Position>? kingThreatenedFrom = null)
     {
         if (threateningPositions.Count > 0)
             return 0; // nothing can be added
-        int k = moves.Length;
+        int k = _possibleSpecialMoves.Length;
         for (int i = 0; i < k; i++)
         {
-            Position pos = moves[0].PosTo;
+            Position pos = _possibleSpecialMoves[0].PosTo;
             Square? square = board.ConvertToSquare(pos);
 
             int xOffset = positionFrom.X - pos.X;
@@ -130,7 +130,7 @@ public class KingPiece : Piece
             {
                 pos = pos.Offset(xOffset, 0);
 
-                if (square.ThreateningSquares.Count > 0)
+                if (square.ThreateningPositions.Count > 0)
                     threatenedSquare = true;
                 square = board.ConvertToSquare(pos);
             }
@@ -138,7 +138,7 @@ public class KingPiece : Piece
             if (threatenedSquare)
             {
                 k--;
-                moves[i] = moves[k];
+                _possibleSpecialMoves[i] = _possibleSpecialMoves[k];
                 i--;
             }
         }

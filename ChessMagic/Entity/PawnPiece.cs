@@ -90,10 +90,10 @@ public class PawnPiece : Piece
         return moves.ToArray();
     }
 
-    public override int RemoveInvalidSpecialMoves(Position positionFrom, ref SpecialMove[] moves, ChessBoard board,
+    public override int RemoveInvalidSpecialMoves(Position positionFrom, ChessBoard board,
         List<Position> threateningPositions, Position kingPosition, List<Position>? kingThreatenedFrom = null)
     {
-        int k = moves.Length;
+        int k = _possibleSpecialMoves.Length;
         // handle king checks
         if (kingThreatenedFrom != null)
         {
@@ -105,13 +105,13 @@ public class PawnPiece : Piece
             
                 for(int i = 0; i < k; i++)
                 {
-                    SpecialMove move = moves[i];
+                    SpecialMove move = _possibleSpecialMoves[i];
                     if (!move.PosTo.Equals(position) && !kingThreatenedSquare.Occupant.CanAttack(position, kingPosition, board, move.PosTo, 0)
                         || kingThreatenedSquare.Occupant.CanAttack(position, kingPosition, board, move.InvolvingPosition, 1))
                     {
                         // king attack cannot be stopped through this move, remove it from valid moves
-                        moves[i] = moves[k - 1];
-                        moves[k - 1] = move;
+                        _possibleSpecialMoves[i] = _possibleSpecialMoves[k - 1];
+                        _possibleSpecialMoves[k - 1] = move;
                         k--;
                         i--;
                     }
@@ -131,11 +131,11 @@ public class PawnPiece : Piece
                 // piece is pinned
                 for(int i = 0; i < k; i++)
                 {
-                    SpecialMove move = moves[i];
+                    SpecialMove move = _possibleSpecialMoves[i];
                     if (!threateningSquare.Occupant.CanAttack(threateningPosition, kingPosition, board, move.PosTo, 1))
                     {
-                        moves[i] = moves[k - 1];
-                        moves[k - 1] = move;
+                        _possibleSpecialMoves[i] = _possibleSpecialMoves[k - 1];
+                        _possibleSpecialMoves[k - 1] = move;
                         k--;
                         i--;
                     }
