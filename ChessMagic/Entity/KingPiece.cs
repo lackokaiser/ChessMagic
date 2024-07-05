@@ -10,6 +10,8 @@ public class KingPiece : Piece
     }
 
     public override PieceType Type => PieceType.King;
+    
+    public override string AlgebraicNotation => "K";
     public override Position[] GetPossibleMoves(Position positionFrom, ChessBoard board)
     {
         List<Position> moves = new();
@@ -150,10 +152,10 @@ public class KingPiece : Piece
     {
         if (move.InvolvingPosition == null)
             throw new ApplicationException("Invalid special move for king");
-        board.PerformMove(positionFrom, move.PosTo, Color);
+        board.PerformMove(positionFrom, move.PosTo);
         int xOffset = positionFrom.X - move.PosTo.X;
         xOffset /= Math.Abs(xOffset);
-        board.PerformMove(move.InvolvingPosition, move.PosTo.Offset(xOffset, 0), Color);
+        board.PerformMove(move.InvolvingPosition, move.PosTo.Offset(xOffset, 0));
     }
 
     public override bool CanAttack(Position positionFrom, Position positionTo, ChessBoard board, Position? attackGoThrough, int depth)

@@ -11,9 +11,17 @@ public class Position(int x, int y)
 
     public int Y => y;
 
-    public Position Offset(int x, int y)
+    public Position Offset(int xOffset, int yOffset)
     {
-        return new Position(X + x, Y + y);
+        return new Position(X + xOffset, Y + yOffset);
+    }
+    
+    public string AlgebraicNotation()
+    {
+        char xPos = (char)(97 + x);
+        string res = xPos.ToString() + (y + 1);
+
+        return res;
     }
 
     public override bool Equals(object? obj)

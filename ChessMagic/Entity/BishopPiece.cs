@@ -10,6 +10,9 @@ public class BishopPiece : Piece
     }
     
     public override PieceType Type => PieceType.Bishop;
+
+    public override string AlgebraicNotation => "B";
+
     public override Position[] GetPossibleMoves(Position positionFrom, ChessBoard board)
     {
         Position upPosition = positionFrom.Offset(1, 1);

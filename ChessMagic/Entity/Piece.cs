@@ -14,6 +14,7 @@ public abstract class Piece
     protected SpecialMove[] _possibleSpecialMoves = [];
     public bool FirstMove { get; private set; } = true;
     public PieceColor Color => _color;
+    public virtual string AlgebraicNotation => "";
 
     public virtual PieceType Type => PieceType.Pawn;
 

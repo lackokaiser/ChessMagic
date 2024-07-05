@@ -10,6 +10,9 @@ public class KnightPiece : Piece
     }
     
     public override PieceType Type => PieceType.Knight;
+    
+    public override string AlgebraicNotation => "N";
+    
     public override Position[] GetPossibleMoves(Position positionFrom, ChessBoard board)
     {
         List<Position> moves = new();

@@ -9,6 +9,8 @@ public class RookPiece : Piece
     {
     }
     public override PieceType Type => PieceType.Rook;
+    
+    public override string AlgebraicNotation => "R";
     public override Position[] GetPossibleMoves(Position positionFrom, ChessBoard board)
     {
         Position upPosition = positionFrom.Offset(0, 1);

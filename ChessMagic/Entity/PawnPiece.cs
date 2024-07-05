@@ -154,7 +154,7 @@ public class PawnPiece : Piece
 
     public override void PerformSpecialMove(Position positionFrom, SpecialMove move, ChessBoard board)
     {
-        board.PerformMove(positionFrom, move.PosTo, Color);
+        board.PerformMove(positionFrom, move.PosTo);
         if (move.InvolvingPosition != null) // en-peasant 
         {
             board.RemovePiece(move.InvolvingPosition);

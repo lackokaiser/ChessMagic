@@ -10,6 +10,8 @@ public class QueenPiece : Piece
     }
     
     public override PieceType Type => PieceType.Queen;
+    
+    public override string AlgebraicNotation => "Q";
     public override Position[] GetPossibleMoves(Position positionFrom, ChessBoard board)
     {
         //horizontal, vertical
