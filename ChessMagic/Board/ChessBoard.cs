@@ -12,8 +12,33 @@ public class ChessBoard
 
     public ChessBoard()
     {
+        _squares = new Square[64];
+        InitializeBoard();
         
+        CalculateMoves();
     }
+
+    public void InitializeBoard()
+    {
+        for (int i = 0; i < _squares.Length; i++)
+        {
+            Piece? p = null;
+            if (i is >= 8 and < 16 or >= 48 and < 56)
+                p = new PawnPiece(i >= 16 ? PieceColor.Black : PieceColor.White);
+            else if (i is 0 or 7 or 56 or 63)
+                p = new RookPiece(i >= 9 ? PieceColor.Black : PieceColor.White);
+            else if (i is 1 or 6 or 57 or 62)
+                p = new KnightPiece(i >= 9 ? PieceColor.Black : PieceColor.White);
+            else if (i is 2 or 5 or 58 or 61)
+                p = new BishopPiece(i >= 9 ? PieceColor.Black : PieceColor.White);
+            else if (i is 3 or 59)
+                p = new QueenPiece(i >= 9 ? PieceColor.Black : PieceColor.White);
+            else if (i is 4 or 60)
+                p = new KingPiece(i >= 9 ? PieceColor.Black : PieceColor.White);
+            _squares[i] = new Square(p);
+        }
+    }
+
 
     public Position ConvertToPosition(int x, int y)
     {
@@ -166,29 +191,51 @@ public class ChessBoard
         location.ThreateningPositions.Add(threatenFrom);
     }
 
-    public Piece? PerformMove(Position from, Position to, PieceColor color)
+    /// <summary>
+    /// Transforms a piece to another location
+    /// </summary>
+    /// <param name="from">The location of the piece to move</param>
+    /// <param name="to">The location the piece must move to</param>
+    /// <returns>The replaced piece at the target location</returns>
+    /// <exception cref="ArgumentException">If there are no piece at the source location</exception>
+    public Piece? PerformMove(Position from, Position to)
     {
-        Square? fromSquare = ConvertToSquare(from);
-        Square? toSquare = ConvertToSquare(to);
+        var piece = RemovePiece(from);
+        
+        if (piece == null)
+            throw new ArgumentException("No piece was found from removing position");
 
-        if (fromSquare == null || toSquare == null)
-            throw new ArgumentException("Position invalid");
-
-        if (!fromSquare.IsOccupied() || fromSquare.Occupant?.Color != color)
-            throw new ArgumentException("Invalid occupant of the square");
-
-        if (toSquare.Occupant?.Color == color)
-            throw new ArgumentException("Invalid move for square");
-
-        Piece? takenPiece = toSquare.Occupant;
-
-        toSquare.Occupant = fromSquare.Occupant;
-
-        fromSquare.Occupant = null;
-
-        return takenPiece;
+        var replaced = PlacePiece(to, piece);
+        return replaced;
     }
 
+    /// <summary>
+    /// Places a piece at a specific location
+    /// </summary>
+    /// <param name="at">The location to place the piece</param>
+    /// <param name="pieceToPlace">The piece to place</param>
+    /// <returns>The piece that was replaced</returns>
+    /// <exception cref="ApplicationException">If the position is invalid</exception>
+    public Piece? PlacePiece(Position at, Piece pieceToPlace)
+    {
+        Piece? removed = RemovePiece(at);
+
+        Square? atSquare = ConvertToSquare(at);
+
+        if (atSquare == null)
+            throw new ApplicationException("Invalid square position");
+
+        atSquare.Occupant = pieceToPlace;
+
+        return removed;
+    }
+
+    /// <summary>
+    /// Removes a piece from the board at a specific location
+    /// </summary>
+    /// <param name="from">The location to remove</param>
+    /// <returns>The piece that was removed</returns>
+    /// <exception cref="ApplicationException">If the position is invalid</exception>
     public Piece? RemovePiece(Position from)
     {
         Square? square = ConvertToSquare(from);
