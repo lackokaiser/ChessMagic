@@ -11,4 +11,10 @@ public class GameSnapshot
     {
         PlayerNext = playerNext;
     }
+
+    public char this[int index]
+    {
+        get => Snapshot[index];
+        set => Snapshot[index] = value;
+    }
 }
