@@ -61,6 +61,24 @@ public class Game : GameEventHandler
         PostMoveCalculation(notation);
     }
 
+    public void PerformMove(Position moveFrom, SpecialMove move)
+    {
+        if (!_gameOn)
+            return;
+
+        var pair = _board.PerformMove(moveFrom, move);
+
+        OnPieceMovedEvent(new PieceMovedEventArgs(moveFrom, move.PosTo));
+        if (!pair.Item2.IsInvalid())
+        {
+            OnPieceMovedEvent(new PieceMovedEventArgs(move.InvolvingPosition!, pair.Item2));
+        }
+        else if (move.InvolvingPosition != null)
+        {
+            OnSquareUpdateEvent(move.InvolvingPosition);
+        }
+    }
+
     private void PlayerWon(PieceColor winningColor)
     {
         OnGameStateChangedEvent(winningColor == PieceColor.Black ? GameState.BlackWin : GameState.WhiteWin);

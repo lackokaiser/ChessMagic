@@ -9,7 +9,7 @@ namespace ChessMagic.Board;
 /// </summary>
 public class ChessBoard
 {
-    private Square[] _squares;
+    private readonly Square[] _squares;
 
     public ChessBoard()
     {
@@ -38,6 +38,11 @@ public class ChessBoard
                 p = new KingPiece(i >= 9 ? PieceColor.Black : PieceColor.White);
             _squares[i] = new Square(p);
         }
+    }
+
+    public void InitializeBoard(GameSnapshot snapshotFor)
+    {
+        
     }
 
     /// <summary>
@@ -113,7 +118,7 @@ public class ChessBoard
                     throw new ApplicationException("invalid square");
                 if(!square.IsOccupied())
                     continue;
-                if (square.Occupant.Color == color && square.Occupant.Type == PieceType.King)
+                if (square.Occupant!.Color == color && square.Occupant.Type == PieceType.King)
                     return pos;
             }
         }
@@ -196,7 +201,7 @@ public class ChessBoard
 
                 if (square.IsOccupied())
                 {
-                    foreach (var move in square.Occupant.PossibleMoves)
+                    foreach (var move in square.Occupant!.PossibleMoves)
                     {
                         Square? sqr = ConvertToSquare(move);
                         if (sqr == null)
@@ -232,6 +237,18 @@ public class ChessBoard
         if (threateningSquare == null) throw new ArgumentException("Threatening square is invalid");
 
         location.ThreateningPositions.Add(threatenFrom);
+    }
+
+    public (string, Position) PerformMove(Position from, SpecialMove move)
+    {
+        Square? fromSquare = ConvertToSquare(from);
+
+        if (fromSquare == null || !fromSquare.IsOccupied())
+            throw new ApplicationException("No piece was found");
+        
+        Position involvingTarget = fromSquare.Occupant!.PerformSpecialMove(from, move, this);
+
+        return (fromSquare.Occupant.SpecialMoveAlgebraicNotation(from, move), involvingTarget);
     }
 
     /// <summary>
