@@ -7,10 +7,16 @@ namespace ChessMagic.Util;
 /// <param name="y">The y coordinate</param>
 public class Position(int x, int y)
 {
+    public static Position Invalid = new (-1, -1);
     public int X => x;
 
     public int Y => y;
 
+    public bool IsInvalid()
+    {
+        return Equals(Invalid);
+    }
+    
     public Position Offset(int xOffset, int yOffset)
     {
         return new Position(X + xOffset, Y + yOffset);
