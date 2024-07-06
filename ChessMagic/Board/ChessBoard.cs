@@ -1,4 +1,5 @@
 using ChessMagic.Entity;
+using ChessMagic.Ledger;
 using ChessMagic.Util;
 
 namespace ChessMagic.Board;
@@ -39,6 +40,38 @@ public class ChessBoard
         }
     }
 
+    /// <summary>
+    /// Creates a snapshot of the current game. Aims to be as memory sparing as possible
+    /// </summary>
+    /// <param name="nextPlayer">The player's color who will move next</param>
+    /// <returns>The constructed snapshot of the board</returns>
+    /// <exception cref="ApplicationException">If one piece does not exist when it should</exception>
+    public GameSnapshot CreateSnapshot(PieceColor nextPlayer)
+    {
+        GameSnapshot snapshot = new GameSnapshot(nextPlayer);
+        for (int i = 0; i < _squares.Length; i++)
+        {
+            if(!_squares[i].IsOccupied())
+                snapshot[i] = 'x';
+            else
+            {
+                Piece? p = _squares[i].Occupant;
+                if (p == null)
+                    throw new ApplicationException("Wrong square");
+
+                string pType = p.AlgebraicNotation;
+
+                if (p.Color == PieceColor.White)
+                {
+                    pType = pType.ToLower();
+                }
+
+                snapshot[i] = pType[0];
+            }
+        }
+
+        return snapshot;
+    }
 
     public Position ConvertToPosition(int x, int y)
     {
@@ -50,6 +83,16 @@ public class ChessBoard
         if (position.X < 0 || position.X > 7 || position.Y < 0 || position.Y > 7)
             return null;
         return _squares[position.Y * 8 + position.X];
+    }
+
+    public bool IsPositionThreatened(Position position)
+    {
+        Square? square = ConvertToSquare(position);
+
+        if (square == null)
+            throw new ApplicationException("Wrong position");
+
+        return square.ThreateningPositions.Count > 0;
     }
 
     /// <summary>
@@ -135,7 +178,7 @@ public class ChessBoard
         return false;
     }
 
-    public void CalculateMoves(ChessBoard board)
+    public void CalculateMoves()
     {
         List<(Position, Square)> foundPoses = new();
         
@@ -149,16 +192,16 @@ public class ChessBoard
                 square?.ThreateningPositions.Clear();
                 if (square == null)
                     throw new ApplicationException("Invalid square");
-                square.GeneratePossibleMoves(pos, board);
+                square.GeneratePossibleMoves(pos, this);
 
                 if (square.IsOccupied())
                 {
                     foreach (var move in square.Occupant.PossibleMoves)
                     {
-                        Square? sqr = board.ConvertToSquare(move);
+                        Square? sqr = ConvertToSquare(move);
                         if (sqr == null)
                             throw new ApplicationException("Invalid square");
-                        board.ThreatenSquare(sqr, pos);
+                        ThreatenSquare(sqr, pos);
                     }
                     foundPoses.Add((pos, square));
                 }
@@ -196,17 +239,19 @@ public class ChessBoard
     /// </summary>
     /// <param name="from">The location of the piece to move</param>
     /// <param name="to">The location the piece must move to</param>
-    /// <returns>The replaced piece at the target location</returns>
+    /// <returns>The algebraic notation of the move</returns>
     /// <exception cref="ArgumentException">If there are no piece at the source location</exception>
-    public Piece? PerformMove(Position from, Position to)
+    public string PerformMove(Position from, Position to)
     {
         var piece = RemovePiece(from);
         
         if (piece == null)
             throw new ArgumentException("No piece was found from removing position");
 
-        var replaced = PlacePiece(to, piece);
-        return replaced;
+        PlacePiece(to, piece);
+        
+        
+        return piece.AlgebraicNotation + to.AlgebraicNotation();
     }
 
     /// <summary>
