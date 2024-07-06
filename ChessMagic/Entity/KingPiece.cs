@@ -148,14 +148,27 @@ public class KingPiece : Piece
         return k;
     }
     
-    public override void PerformSpecialMove(Position positionFrom, SpecialMove move, ChessBoard board)
+    public override Position PerformSpecialMove(Position positionFrom, SpecialMove move, ChessBoard board)
     {
         if (move.InvolvingPosition == null)
             throw new ApplicationException("Invalid special move for king");
         board.PerformMove(positionFrom, move.PosTo);
         int xOffset = positionFrom.X - move.PosTo.X;
         xOffset /= Math.Abs(xOffset);
-        board.PerformMove(move.InvolvingPosition, move.PosTo.Offset(xOffset, 0));
+        Position p = move.PosTo.Offset(xOffset, 0);
+        board.PerformMove(move.InvolvingPosition, p);
+
+        return p;
+        //return xOffset > 0 ? "O-O" : "O-O-O";
+    }
+
+    public override string SpecialMoveAlgebraicNotation(Position from, SpecialMove move)
+    {
+        if (move.InvolvingPosition == null)
+            throw new ApplicationException("Invalid special move for king");
+        int xOffset = from.X - move.PosTo.X;
+        
+        return xOffset > 0 ? "O-O" : "O-O-O";
     }
 
     public override bool CanAttack(Position positionFrom, Position positionTo, ChessBoard board, Position? attackGoThrough, int depth)

@@ -152,7 +152,7 @@ public class PawnPiece : Piece
         return positionFrom.X - positionTo.X == direction && positionFrom.Y - positionTo.Y == direction; // diagonal distance is 1
     }
 
-    public override void PerformSpecialMove(Position positionFrom, SpecialMove move, ChessBoard board)
+    public override Position PerformSpecialMove(Position positionFrom, SpecialMove move, ChessBoard board)
     {
         board.PerformMove(positionFrom, move.PosTo);
         if (move.InvolvingPosition != null) // en-peasant 
@@ -161,5 +161,14 @@ public class PawnPiece : Piece
         }
         else
             performedDoubleMove = true;
+
+        if (move.InvolvingPosition != null)
+            return move.InvolvingPosition;
+        return Position.Invalid;
+    }
+
+    public override string SpecialMoveAlgebraicNotation(Position from, SpecialMove move)
+    {
+        return move.PosTo.AlgebraicNotation();
     }
 }

@@ -195,7 +195,14 @@ public abstract class Piece
     /// <param name="positionFrom">The position where the square should be</param>
     /// <param name="move">The move to perform</param>
     /// <param name="board">The board where the piece should be</param>
-    public virtual void PerformSpecialMove(Position positionFrom, SpecialMove move, ChessBoard board)
+    /// <returns>The position of the other piece in the interaction</returns>
+    public virtual Position PerformSpecialMove(Position positionFrom, SpecialMove move, ChessBoard board)
     {
+        return Position.Invalid;
+    }
+
+    public virtual string SpecialMoveAlgebraicNotation(Position from, SpecialMove move)
+    {
+        return "";
     }
 }
