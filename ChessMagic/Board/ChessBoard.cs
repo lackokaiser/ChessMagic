@@ -19,8 +19,9 @@ public class ChessBoard
         CalculateMoves();
     }
 
-    public void InitializeBoard()
+    public SquareInfo[] InitializeBoard()
     {
+        SquareInfo[] infos = new SquareInfo[64];
         for (int i = 0; i < _squares.Length; i++)
         {
             Piece? p = null;
@@ -37,12 +38,35 @@ public class ChessBoard
             else if (i is 4 or 60)
                 p = new KingPiece(i >= 9 ? PieceColor.Black : PieceColor.White);
             _squares[i] = new Square(p);
+
+            Position position = ConvertToPosition(i / 8, i % 8);
+            if (p == null)
+                infos[i] = new SquareInfo(position);
+            else
+                infos[i] = new SquareInfo(position, p.Type, p.Color);
         }
+
+        return infos;
     }
 
-    public void InitializeBoard(GameSnapshot snapshotFor)
+    public SquareInfo[] InitializeBoard(GameSnapshot snapshotFor)
     {
-        
+        List<SquareInfo> infos = new List<SquareInfo>();
+        for (int i = 0; i < _squares.Length; i++)
+        {
+            Piece? piece = snapshotFor.DecodeCharacter(snapshotFor[i]);
+
+            if (_squares[i].Occupant == null && piece == null ||
+                _squares[i].Occupant != null && _squares[i].Occupant.Equals(piece))
+            {
+                if(piece == null)
+                    infos.Add(new SquareInfo(ConvertToPosition(i / 8, i % 8)));
+                else
+                    infos.Add(new SquareInfo(ConvertToPosition(i / 8, i % 8), piece.Type, piece.Color));
+            }
+        }
+
+        return infos.ToArray();
     }
 
     /// <summary>
@@ -56,30 +80,38 @@ public class ChessBoard
         GameSnapshot snapshot = new GameSnapshot(nextPlayer);
         for (int i = 0; i < _squares.Length; i++)
         {
-            if(!_squares[i].IsOccupied())
-                snapshot[i] = 'x';
-            else
-            {
-                Piece? p = _squares[i].Occupant;
-                if (p == null)
-                    throw new ApplicationException("Wrong square");
-
-                string pType = p.AlgebraicNotation;
-
-                if (p.Color == PieceColor.White)
-                {
-                    pType = pType.ToLower();
-                }
-
-                snapshot[i] = pType[0];
-            }
+            snapshot[i] = snapshot.EncodePiece(_squares[i].Occupant);
         }
 
         return snapshot;
     }
 
+    public SquareInfo GetSquareInfo(int x, int y)
+    {
+        Position p = ConvertToPosition(x, y);
+
+        if (!p.IsInvalid())
+            return GetSquareInfo(p);
+
+        throw new ArgumentException("Wrong coordinates!");
+    }
+
+    public SquareInfo GetSquareInfo(Position position)
+    {
+        Square? sqr = ConvertToSquare(position);
+
+        if (sqr == null)
+            throw new ArgumentException("Invalid square");
+
+        if (sqr.IsOccupied())
+            return new SquareInfo(position, sqr.Occupant.Type, sqr.Occupant.Color);
+        return new SquareInfo(position);
+    }
+
     public Position ConvertToPosition(int x, int y)
     {
+        if(x < 0 || x > 7 || y < 0 || y > 7)
+            return Position.Invalid;
         return new Position(x, y);
     }
 
