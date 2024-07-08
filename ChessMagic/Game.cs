@@ -13,11 +13,12 @@ public class Game : GameEventHandler
     private ChessBoard _board;
     private MoveHistory _ledger;
     private bool _gameOn = true;
+    private bool _initialized = false;
 
-    public Game()
+    public bool IsReady()
     {
+        return _gameOn && _initialized;
     }
-
     public async Task InitializeGame()
     {
         await Task.Run(() =>
@@ -25,8 +26,24 @@ public class Game : GameEventHandler
             _nextPlayer = PieceColor.White;
             _board = new ChessBoard();
             _ledger = new MoveHistory();
+            _initialized = true;
             OnGameStateChangedEvent(GameState.Ready);
         });
+    }
+
+    public void RollBackGame(uint times)
+    {
+        if (!IsReady())
+            return;
+
+        GameSnapshot? snapshot = _ledger.Rollback(times);
+
+        if (snapshot == null)
+            return;
+        _board.InitializeBoard(snapshot);
+
+        _nextPlayer = snapshot.PlayerNext;
+        OnNextPlayerEvent(_nextPlayer);
     }
 
     private void ToggleNextPlayer()
@@ -39,21 +56,21 @@ public class Game : GameEventHandler
     
     public Position[] GetPossibleMoves(int x, int y)
     {
-        if (!_gameOn)
+        if (!IsReady())
             return [];
         return _board.GetMovesFor(_nextPlayer, _board.ConvertToPosition(x, y));
     }
 
     public SpecialMove[] GetSpecialMoves(int x, int y)
     {
-        if (!_gameOn)
+        if (!IsReady())
             return [];
         return _board.GetSpecialMovesFor(_nextPlayer, _board.ConvertToPosition(x, y));
     }
 
     public void PerformMove(Position moveFrom, Position move)
     {
-        if (!_gameOn)
+        if (!IsReady())
             return;
         string notation = _board.PerformMove(moveFrom, move);
         OnPieceMovedEvent(new PieceMovedEventArgs(moveFrom, move));
@@ -63,7 +80,7 @@ public class Game : GameEventHandler
 
     public void PerformMove(Position moveFrom, SpecialMove move)
     {
-        if (!_gameOn)
+        if (!IsReady())
             return;
 
         var pair = _board.PerformMove(moveFrom, move);
@@ -75,8 +92,11 @@ public class Game : GameEventHandler
         }
         else if (move.InvolvingPosition != null)
         {
-            OnSquareUpdateEvent(move.InvolvingPosition);
+            SquareInfo info = _board.GetSquareInfo(move.InvolvingPosition);
+            OnSquareUpdateEvent(info);
         }
+        
+        PostMoveCalculation(pair.Item1);
     }
 
     private void PlayerWon(PieceColor winningColor)
