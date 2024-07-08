@@ -205,4 +205,15 @@ public abstract class Piece
     {
         return "";
     }
+
+    public override bool Equals(object? obj)
+    {
+        if (obj is Piece piece)
+        {
+            if (piece.Color == Color && piece.Type == Type)
+                return true;
+        }
+        
+        return base.Equals(obj);
+    }
 }
