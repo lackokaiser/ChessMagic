@@ -1,3 +1,4 @@
+using ChessMagic.Board;
 using ChessMagic.Event.Arguments;
 using ChessMagic.Util;
 
@@ -7,7 +8,8 @@ public delegate void AlgebraicNotationUpdate(object sender, string notation);
 public delegate void NextPlayer(object sender, PieceColor color);
 public delegate void PieceMoved(object sender, PieceMovedEventArgs args);
 public delegate void GameStateChanged(object sender, GameState state);
-public delegate void SquareUpdate(object sender, Position positionUpdated);
+public delegate void SquareUpdate(object sender, SquareInfo args);
+
 
 public abstract class GameEventHandler
 {
@@ -37,8 +39,8 @@ public abstract class GameEventHandler
         GameStateChangedEvent?.Invoke(this, state);
     }
 
-    protected void OnSquareUpdateEvent(Position positionUpdated)
+    protected void OnSquareUpdateEvent(SquareInfo args)
     {
-        SquareUpdateEvent?.Invoke(this, positionUpdated);
+        SquareUpdateEvent?.Invoke(this, args);
     }
 }
